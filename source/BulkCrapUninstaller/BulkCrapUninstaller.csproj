@@ -128,6 +128,12 @@
       <DependentUpon>AdvancedFilters.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\ClipboardCopyItem.cs" />
+    <Compile Include="Controls\FileTargeter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FileTargeter.Designer.cs">
+      <DependentUpon>FileTargeter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ListLegend.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -196,6 +202,12 @@
     <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NukeWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NukeWindow.Designer.cs">
+      <DependentUpon>NukeWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RatingPopup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -231,6 +243,7 @@
     <Compile Include="Functions\Uninstaller.cs" />
     <Compile Include="Functions\UninstallerListViewTools.cs" />
     <Compile Include="Functions\UpdateGrabber.cs" />
+    <Compile Include="LogWriter.cs" />
     <Compile Include="NBugConfigurator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Forms\PropertiesWindow.cs">
@@ -308,6 +321,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.cs" />
+    <None Include="Resources\radioactive.png" />
+    <None Include="Resources\add.multiple.png" />
+    <None Include="Resources\add.png" />
+    <None Include="Resources\table.add.png" />
     <EmbeddedResource Include="Controls\AdvancedClipboardCopy.cs.resx">
       <DependentUpon>AdvancedClipboardCopy.cs</DependentUpon>
     </EmbeddedResource>
@@ -318,6 +335,12 @@
       <DependentUpon>AdvancedClipboardCopy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\AdvancedClipboardCopy.hu.resx">
+      <DependentUpon>AdvancedClipboardCopy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\AdvancedClipboardCopy.it.resx">
+      <DependentUpon>AdvancedClipboardCopy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\AdvancedClipboardCopy.nl.resx">
       <DependentUpon>AdvancedClipboardCopy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\AdvancedClipboardCopy.pl.resx">
@@ -347,6 +370,12 @@
     <EmbeddedResource Include="Controls\AdvancedFilters.hu.resx">
       <DependentUpon>AdvancedFilters.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\AdvancedFilters.it.resx">
+      <DependentUpon>AdvancedFilters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\AdvancedFilters.nl.resx">
+      <DependentUpon>AdvancedFilters.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\AdvancedFilters.pl.resx">
       <DependentUpon>AdvancedFilters.cs</DependentUpon>
     </EmbeddedResource>
@@ -362,6 +391,9 @@
     <EmbeddedResource Include="Controls\AdvancedFilters.sl.resx">
       <DependentUpon>AdvancedFilters.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FileTargeter.resx">
+      <DependentUpon>FileTargeter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ListLegend.cs.resx">
       <DependentUpon>ListLegend.cs</DependentUpon>
     </EmbeddedResource>
@@ -375,6 +407,12 @@
       <DependentUpon>ListLegend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ListLegend.hu.resx">
+      <DependentUpon>ListLegend.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ListLegend.it.resx">
+      <DependentUpon>ListLegend.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ListLegend.nl.resx">
       <DependentUpon>ListLegend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ListLegend.pl.resx">
@@ -404,6 +442,12 @@
       <DependentUpon>PropertiesSidebar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertiesSidebar.hu.resx">
+      <DependentUpon>PropertiesSidebar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertiesSidebar.it.resx">
+      <DependentUpon>PropertiesSidebar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertiesSidebar.nl.resx">
       <DependentUpon>PropertiesSidebar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertiesSidebar.pl.resx">
@@ -436,6 +480,12 @@
     <EmbeddedResource Include="Controls\UninstallationSettings.hu.resx">
       <DependentUpon>UninstallationSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\UninstallationSettings.it.resx">
+      <DependentUpon>UninstallationSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\UninstallationSettings.nl.resx">
+      <DependentUpon>UninstallationSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\UninstallationSettings.pl.resx">
       <DependentUpon>UninstallationSettings.cs</DependentUpon>
     </EmbeddedResource>
@@ -462,6 +512,12 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutBox.hu.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutBox.it.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutBox.nl.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutBox.pl.resx">
@@ -494,6 +550,12 @@
     <EmbeddedResource Include="Forms\AdvancedClipboardCopyWindow.hu.resx">
       <DependentUpon>AdvancedClipboardCopyWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AdvancedClipboardCopyWindow.it.resx">
+      <DependentUpon>AdvancedClipboardCopyWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AdvancedClipboardCopyWindow.nl.resx">
+      <DependentUpon>AdvancedClipboardCopyWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdvancedClipboardCopyWindow.pl.resx">
       <DependentUpon>AdvancedClipboardCopyWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -518,10 +580,22 @@
     <EmbeddedResource Include="Forms\FeedbackBox.es.resx">
       <DependentUpon>FeedbackBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FeedbackBox.fr.resx">
+      <DependentUpon>FeedbackBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FeedbackBox.hu.resx">
       <DependentUpon>FeedbackBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FeedbackBox.it.resx">
+      <DependentUpon>FeedbackBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FeedbackBox.nl.resx">
+      <DependentUpon>FeedbackBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FeedbackBox.pl.resx">
+      <DependentUpon>FeedbackBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FeedbackBox.pt.resx">
       <DependentUpon>FeedbackBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FeedbackBox.resx">
@@ -543,6 +617,12 @@
       <DependentUpon>FeedbackWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FeedbackWindow.hu.resx">
+      <DependentUpon>FeedbackWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FeedbackWindow.it.resx">
+      <DependentUpon>FeedbackWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FeedbackWindow.nl.resx">
       <DependentUpon>FeedbackWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FeedbackWindow.pl.resx">
@@ -579,6 +659,12 @@
     <EmbeddedResource Include="Forms\FirstStartBox.hu.resx">
       <DependentUpon>FirstStartBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FirstStartBox.it.resx">
+      <DependentUpon>FirstStartBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FirstStartBox.nl.resx">
+      <DependentUpon>FirstStartBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FirstStartBox.pl.resx">
       <DependentUpon>FirstStartBox.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -588,6 +674,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FirstStartBox.resx">
       <DependentUpon>FirstStartBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FirstStartBox.ru.resx">
       <DependentUpon>FirstStartBox.cs</DependentUpon>
@@ -605,6 +692,12 @@
       <DependentUpon>JunkRemoveWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\JunkRemoveWindow.hu.resx">
+      <DependentUpon>JunkRemoveWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\JunkRemoveWindow.it.resx">
+      <DependentUpon>JunkRemoveWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\JunkRemoveWindow.nl.resx">
       <DependentUpon>JunkRemoveWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\JunkRemoveWindow.pl.resx">
@@ -644,6 +737,12 @@
     <EmbeddedResource Include="Forms\MainWindow.hu.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainWindow.it.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainWindow.nl.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainWindow.pl.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -664,6 +763,9 @@
     <EmbeddedResource Include="Forms\MainWindow.sl.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NukeWindow.resx">
+      <DependentUpon>NukeWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\PropertiesWindow.cs.resx">
       <DependentUpon>PropertiesWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -674,6 +776,12 @@
       <DependentUpon>PropertiesWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PropertiesWindow.hu.resx">
+      <DependentUpon>PropertiesWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PropertiesWindow.it.resx">
+      <DependentUpon>PropertiesWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PropertiesWindow.nl.resx">
       <DependentUpon>PropertiesWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PropertiesWindow.pl.resx">
@@ -691,6 +799,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertiesSidebar.resx">
       <DependentUpon>PropertiesSidebar.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PropertiesWindow.ru.resx">
       <DependentUpon>PropertiesWindow.cs</DependentUpon>
@@ -711,6 +820,12 @@
       <DependentUpon>RatingPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RatingPopup.hu.resx">
+      <DependentUpon>RatingPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RatingPopup.it.resx">
+      <DependentUpon>RatingPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RatingPopup.nl.resx">
       <DependentUpon>RatingPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RatingPopup.pl.resx">
@@ -738,6 +853,12 @@
       <DependentUpon>SettingsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsWindow.hu.resx">
+      <DependentUpon>SettingsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsWindow.it.resx">
+      <DependentUpon>SettingsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsWindow.nl.resx">
       <DependentUpon>SettingsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsWindow.pl.resx">
@@ -771,6 +892,12 @@
     <EmbeddedResource Include="Forms\UninstallProgressWindow.hu.resx">
       <DependentUpon>UninstallProgressWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UninstallProgressWindow.it.resx">
+      <DependentUpon>UninstallProgressWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UninstallProgressWindow.nl.resx">
+      <DependentUpon>UninstallProgressWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\UninstallProgressWindow.pl.resx">
       <DependentUpon>UninstallProgressWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -791,6 +918,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Localisable.es.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Localisable.it.resx" />
+    <EmbeddedResource Include="Properties\Localisable.nl.resx" />
     <EmbeddedResource Include="Properties\Localisable.pt.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Localisable.pt.Designer.cs</LastGenOutput>

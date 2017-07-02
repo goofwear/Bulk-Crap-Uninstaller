@@ -25,7 +25,6 @@ namespace BulkCrapUninstaller
         private static DirectoryInfo _assemblyLocation;
         private static string _installedRegistryKeyName;
         private static bool? _isInstalled;
-        private static string _dbConnectionString;
 
         public static string ApplicationGuid
         {
@@ -63,16 +62,11 @@ namespace BulkCrapUninstaller
         /// </summary>
         public static bool EnableDebug => Debugger.IsAttached || Settings.Default.Debug;
 
-        public static string DbConnectionString
-        {
-            get
-            {
-                return _dbConnectionString ??
-                       (_dbConnectionString =
-                           EnableDebug ? Resources.DbDebugConnectionString : Resources.DbConnectionString);
-            }
-            set { _dbConnectionString = value; }
-        }
+        /// <summary>
+        /// Don't use settings
+        /// </summary>
+        public static string DbConnectionString => 
+            Debugger.IsAttached ? Resources.DbDebugConnectionString : Resources.DbConnectionString;
 
         public static string InstalledRegistryKeyName
         {
@@ -212,11 +206,18 @@ namespace BulkCrapUninstaller
         {
             try
             {
+                const string cleanerName = "CleanLogs.bat";
+                if (!File.Exists(Path.Combine(AssemblyLocation.FullName, cleanerName)))
+                {
+                    Console.WriteLine(@"WARNING: CleanLogs.bat doesn't exist, can't clean logs.");
+                    return;
+                }
+
                 var ps = new ProcessStartInfo
                 {
-                    WorkingDirectory = Program.AssemblyLocation.FullName,
+                    WorkingDirectory = AssemblyLocation.FullName,
                     FileName = "cmd.exe",
-                    Arguments = "/c start /min CleanLogs.bat",
+                    Arguments = "/c start /min " + cleanerName,
                     UseShellExecute = true,
                     WindowStyle = ProcessWindowStyle.Minimized
                 };

@@ -73,6 +73,26 @@ namespace BulkCrapUninstaller.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap add {
+            get {
+                object obj = ResourceManager.GetObject("add", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap add_multiple {
+            get {
+                object obj = ResourceManager.GetObject("add.multiple", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap bigImage {
             get {
                 object obj = ResourceManager.GetObject("bigImage", resourceCulture);
@@ -504,6 +524,16 @@ namespace BulkCrapUninstaller.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap radioactive {
+            get {
+                object obj = ResourceManager.GetObject("radioactive", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap rating1 {
             get {
                 object obj = ResourceManager.GetObject("rating1", resourceCulture);
@@ -606,6 +636,16 @@ namespace BulkCrapUninstaller.Properties {
         internal static string SubmitFeedbackLink {
             get {
                 return ResourceManager.GetString("SubmitFeedbackLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table_add {
+            get {
+                object obj = ResourceManager.GetObject("table.add", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

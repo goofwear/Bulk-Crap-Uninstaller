@@ -40,7 +40,7 @@ namespace BulkCrapUninstaller.Functions
         public static Color InvalidColor = Color.FromArgb(unchecked((int)0xffE0E0E0));
         public static Color UnregisteredColor = Color.FromArgb(unchecked((int)0xffffcccc));
         public static Color WindowsFeatureColor = Color.FromArgb(unchecked((int)0xffddbbff));
-        public static Color WindowsStoreAppColor = Color.FromArgb(unchecked((int)0xff88ffff));
+        public static Color WindowsStoreAppColor = Color.FromArgb(unchecked((int)0xffa3ffff));
     }
 
     internal class UninstallerListViewTools : IDisposable
@@ -251,9 +251,9 @@ namespace BulkCrapUninstaller.Functions
                         _ratingManager.FetchRatings();
                         _settings.Settings.MiscRatingCacheDate = DateTime.Now;
                     }
-                    catch //(Exception ex)
+                    catch (Exception ex)
                     {
-                        //PremadeDialogs.GenericError(ex);
+                        Console.WriteLine(ex);
                     }
                 })
                 { IsBackground = false, Name = "ProcessRatingInit_Thread" }.Start();
@@ -282,12 +282,6 @@ namespace BulkCrapUninstaller.Functions
         public event EventHandler AfterFiltering;
         public event EventHandler<ListRefreshEventArgs> ListRefreshIsRunningChanged;
         public event EventHandler<CountingUpdateEventArgs> UninstallerPostprocessingProgressUpdate;
-
-        public void DeselectAllItems(object sender, EventArgs e)
-        {
-            _listView.ListView.DeselectAll();
-            _listView.ListView.Focus();
-        }
 
         /*public bool DisplayWindowsFeatures()
         {
@@ -399,12 +393,40 @@ namespace BulkCrapUninstaller.Functions
             dialog.StartWork();
         }
 
+
+        public void DeselectAllItems(object sender, EventArgs e)
+        {
+            var selected = _listView.ListView.CheckBoxes ? _listView.CheckedObjects : _listView.SelectedObjects;
+            var subtracted = selected.Except(FilteredUninstallers);
+            ChangeSelection(subtracted);
+        }
+
+        private void ChangeSelection(IEnumerable<ApplicationUninstallerEntry> newSelection)
+        {
+            _listView.ListView.BeginUpdate();
+
+            var items = newSelection.ToList();
+            if (_listView.ListView.CheckBoxes)
+                _listView.ListView.CheckedObjects = items;
+            _listView.ListView.SelectedObjects = items;
+
+            _listView.ListView.EndUpdate();
+            _listView.ListView.Refresh();
+            _listView.ListView.Focus();
+        }
+
         public void InvertSelectedItems(object sender, EventArgs e)
         {
-            var selectedObjects = _listView.SelectedObjects;
-            _listView.ListView.DeselectAll();
-            _listView.ListView.SelectObjects(FilteredUninstallers.Where(x => !selectedObjects.Contains(x)).ToList());
-            _listView.ListView.Focus();
+            var selected = _listView.ListView.CheckBoxes ? _listView.CheckedObjects : _listView.SelectedObjects;
+            var inverted = FilteredUninstallers.Except(selected);
+            ChangeSelection(inverted);
+        }
+
+        public void SelectAllItems(object sender, EventArgs e)
+        {
+            var selected = _listView.ListView.CheckBoxes ? _listView.CheckedObjects : _listView.SelectedObjects;
+            var added = selected.Union(FilteredUninstallers);
+            ChangeSelection(added);
         }
 
         public void RefreshList()
@@ -414,12 +436,6 @@ namespace BulkCrapUninstaller.Functions
 
             _listView.ListView.UpdateColumnFiltering();
             //_listView.ListView.BuildList(true); No need, UpdateColumnFiltering already does this
-        }
-
-        public void SelectAllItems(object sender, EventArgs e)
-        {
-            _listView.ListView.SelectAll();
-            _listView.ListView.Focus();
         }
 
         /// <summary>
@@ -477,9 +493,11 @@ namespace BulkCrapUninstaller.Functions
         private void ListRefreshThread(LoadingDialogInterface dialogInterface)
         {
             dialogInterface.SetSubProgressVisible(true);
-            AllUninstallers = ApplicationUninstallerFactory.GetUninstallerEntries(x =>
+            var progressMax = 0;
+            var uninstallerEntries = ApplicationUninstallerFactory.GetUninstallerEntries(x =>
             {
-                dialogInterface.SetMaximum(x.TotalCount);
+                progressMax = x.TotalCount + 2;
+                dialogInterface.SetMaximum(progressMax);
                 dialogInterface.SetProgress(x.CurrentCount, x.Message);
 
                 var inner = x.Inner;
@@ -498,9 +516,41 @@ namespace BulkCrapUninstaller.Functions
                     throw new OperationCanceledException();
             });
 
-            dialogInterface.SetMaximum(9);
-            dialogInterface.SetProgress(9, Localisable.Progress_Finishing);
-            dialogInterface.SetSubMaximum(5);
+            dialogInterface.SetProgress(progressMax - 1, Localisable.Progress_Finishing_Startup);
+            dialogInterface.SetSubMaximum(StartupManager.Factories.Count);
+            var i = 0;
+            var startupEntries = new List<StartupEntryBase>();
+            foreach (var factory in StartupManager.Factories)
+            {
+                dialogInterface.SetSubProgress(i++, factory.Key);
+                try
+                {
+                    startupEntries.AddRange(factory.Value());
+                }
+                catch (Exception ex)
+                {
+                    PremadeDialogs.GenericError(ex);
+                }
+            }
+            
+            dialogInterface.SetProgress(progressMax, Localisable.Progress_Finishing, true);
+            dialogInterface.SetSubMaximum(3);
+            dialogInterface.SetSubProgress(0, string.Empty);
+
+            if (!string.IsNullOrEmpty(Program.InstalledRegistryKeyName))
+                uninstallerEntries.RemoveAll(x => PathTools.PathsEqual(x.RegistryKeyName, Program.InstalledRegistryKeyName));
+
+            AllUninstallers = uninstallerEntries;
+
+            dialogInterface.SetSubProgress(1, Localisable.MainWindow_Statusbar_RefreshingStartup);
+            try
+            {
+                ReassignStartupEntries(false, startupEntries);
+            }
+            catch (Exception ex)
+            {
+                PremadeDialogs.GenericError(ex);
+            }
 
             dialogInterface.SetSubProgress(2, Localisable.Progress_Finishing_Icons);
             try
@@ -511,18 +561,8 @@ namespace BulkCrapUninstaller.Functions
             {
                 PremadeDialogs.GenericError(ex);
             }
-
-            dialogInterface.SetSubProgress(4, Localisable.Progress_Finishing_Startup);
-            try
-            {
-                ReassignStartupEntries(false);
-            }
-            catch (Exception ex)
-            {
-                PremadeDialogs.GenericError(ex);
-            }
-
-            //dialogInterface.SetSubProgress(3, string.Empty);
+            
+            dialogInterface.SetSubProgressVisible(false);
         }
 
         /// <summary>
@@ -858,11 +898,6 @@ namespace BulkCrapUninstaller.Functions
                 UninstallerPostprocessingProgressUpdate?.Invoke(this, countingUpdateEventArgs);
                 currentCount++;
             }
-        }
-
-        internal void ReassignStartupEntries(bool refreshListView)
-        {
-            ReassignStartupEntries(refreshListView, StartupManager.GetAllStartupItems());
         }
 
         internal void ReassignStartupEntries(bool refreshListView, IEnumerable<StartupEntryBase> items)

@@ -1,9 +1,4 @@
-﻿/*
-    Copyright (c) 2017 Marcin Szeniak (https://github.com/Klocman/)
-    Apache License Version 2.0
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -26,8 +21,7 @@ namespace UninstallTools
 
             QuestionableDirectoryNames = new[]
             {
-                "install", "settings", "config", "configuration",
-                "users", "data"
+                "install", "settings", "config", "configuration", "users", "data"
             }.AsEnumerable();
 
             DirectoryBlacklist = new[]
@@ -98,6 +92,14 @@ namespace UninstallTools
         /// </summary>
         public static bool QuietAutomatizationKillStuck { get; set; }
 
+        public static bool ScanSteam { get; set; }
+
+        public static bool ScanStoreApps { get; set; }
+
+        public static bool ScanWinFeatures { get; set; }
+
+        public static bool ScanWinUpdates { get; set; }
+
         /// <summary>
         ///     Built-in program files paths.
         /// </summary>
@@ -158,7 +160,7 @@ namespace UninstallTools
         /// <summary>
         ///     Check if dir is a system directory and should be left alone.
         /// </summary>
-        internal static bool IsSystemDirectory(DirectoryInfo dir)
+        public static bool IsSystemDirectory(DirectoryInfo dir)
         {
             return //dir.Name.StartsWith("Windows ") //Probably overkill
                 DirectoryBlacklist.Any(y => y.Equals(dir.Name, StringComparison.InvariantCultureIgnoreCase))

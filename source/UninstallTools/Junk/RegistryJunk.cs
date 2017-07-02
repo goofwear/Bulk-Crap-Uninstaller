@@ -78,14 +78,26 @@ namespace UninstallTools.Junk
             "{F4E57C4B-2036-45F0-A9AB-443BCFE33D9F}}"
         };
 
+        private static readonly IEnumerable<string> AppCompatFlags = new[]
+        {
+            @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags",
+            @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags"
+        };
+
         private static readonly string KeyCu = @"HKEY_CURRENT_USER\SOFTWARE";
         private static readonly string KeyCuWow = @"HKEY_CURRENT_USER\SOFTWARE\Wow6432Node";
         private static readonly string KeyLm = @"HKEY_LOCAL_MACHINE\SOFTWARE";
         private static readonly string KeyLmWow = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node";
 
+        private const string KeyVirtualStoreCu = @"HKEY_CURRENT_USER\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE";
+        private const string KeyVirtualStoreCuWow = @"HKEY_CURRENT_USER\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\Wow6432Node";
+        private const string KeyVirtualStoreLm = @"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE";
+        private const string KeyVirtualStoreLmWow = @"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\VirtualStore\MACHINE\SOFTWARE\Wow6432Node";
+        
         private static readonly string[] SoftwareRegKeys = ProcessTools.Is64BitProcess
-            ? new[] { KeyLm, KeyCu, KeyLmWow, KeyCuWow }
-            : new[] { KeyLm, KeyCu };
+            ? new[] { KeyLm, KeyCu, KeyVirtualStoreCu, KeyVirtualStoreLm,
+                KeyLmWow, KeyCuWow, KeyVirtualStoreCuWow, KeyVirtualStoreLmWow }
+            : new[] { KeyLm, KeyCu, KeyVirtualStoreCu, KeyVirtualStoreLm };
 
         private static readonly string[] ClsidKeys =
         {
@@ -116,6 +128,8 @@ namespace UninstallTools.Junk
             returnList.AddRange(ScanAudioPolicyConfig());
 
             returnList.AddRange(ScanUserAssist());
+
+            returnList.AddRange(ScanAppCompatFlags());
 
             returnList.AddRange(ScanEventLogs());
 
@@ -187,6 +201,37 @@ namespace UninstallTools.Junk
                             node.Confidence.Add(ConfidencePart.DirectoryStillUsed);
 
                         yield return node;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<JunkNode> ScanAppCompatFlags()
+        {
+            if (string.IsNullOrEmpty(Uninstaller.InstallLocation))
+                yield break;
+
+            foreach (var fullCompatKey in AppCompatFlags.SelectMany(compatKey => new[]
+            {
+                compatKey + @"\Layers" ,
+                compatKey + @"\Compatibility Assistant\Store"
+            }))
+            {
+                using (var key = RegistryTools.OpenRegistryKey(fullCompatKey))
+                {
+                    if (key == null)
+                        continue;
+
+                    foreach (var valueName in key.GetValueNames())
+                    {
+                        // Check for matches
+                        if (valueName.StartsWith(Uninstaller.InstallLocation,
+                            StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var junk = new RegistryValueJunkNode(key.Name, valueName, Uninstaller.DisplayName);
+                            junk.Confidence.Add(ConfidencePart.ExplicitConnection);
+                            yield return junk;
+                        }
                     }
                 }
             }
@@ -405,7 +450,18 @@ namespace UninstallTools.Junk
                     if (key == null)
                         continue;
 
-                    foreach (var x in key.GetSubKeyNames())
+                    string[] subKeyNames;
+                    try
+                    {
+                        subKeyNames = key.GetSubKeyNames();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        continue;
+                    }
+
+                    foreach (var x in subKeyNames)
                     {
                         var subKeyName = x.TrimEnd('\"'); // For some reason GetSubKeyNames puts quotes at end sometimes
                         RegistryKey subKey = null;

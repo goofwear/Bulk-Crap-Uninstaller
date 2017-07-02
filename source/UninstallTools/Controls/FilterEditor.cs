@@ -16,6 +16,12 @@ namespace UninstallTools.Controls
 {
     public partial class FilterEditor : UserControl
     {
+        public event EventHandler FocusSearchTarget
+        {
+            add { searchBox1.FocusSearchTarget += value; }
+            remove { searchBox1.FocusSearchTarget -= value; }
+        }
+
         private static readonly LocalisedEnumWrapper[] FilteringOptions;
         private static readonly Dictionary<string, ComparisonTargetInfo> PropertyTargets;
         private FilterCondition _targetFilterCondition;
@@ -177,12 +183,12 @@ namespace UninstallTools.Controls
             OnComparisonMethodChanged(sender, e);
         }
 
-        private void searchBox1_SearchTextChanged(SearchBox arg1, EventArgs arg2)
+        private void searchBox1_SearchTextChanged(object sender, SearchBox.SearchEventArgs searchEventArgs)
         {
-            if (_targetFilterCondition == null || _targetFilterCondition.FilterText == arg1.SearchString) return;
+            if (_targetFilterCondition == null || _targetFilterCondition.FilterText == searchEventArgs.SearchText) return;
 
-            _targetFilterCondition.FilterText = arg1.SearchString;
-            OnComparisonMethodChanged(arg1, arg2);
+            _targetFilterCondition.FilterText = searchEventArgs.SearchText;
+            OnComparisonMethodChanged(sender, searchEventArgs);
         }
 
         private void textBoxFilterText_TextChanged(object sender, EventArgs e)

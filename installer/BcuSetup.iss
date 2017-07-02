@@ -7,8 +7,8 @@
 #define MyAppExeName "BCUninstaller.exe" 
 #define MyAppCopyright "Copyright 2017 Marcin Szeniak"
                                 
-#define MyAppVersion "3.8.1.0"     
-#define MyAppVersionShort "3.8.1"
+#define MyAppVersion "3.10.0.0"     
+#define MyAppVersionShort "3.10"
 
 #include "Scripts\PortablePage.iss" 
 #include "Scripts\PortableIcons.iss"
@@ -59,7 +59,8 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Name: "pl"; MessagesFile: "compiler:Languages\Polish.isl"               
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"              
 Name: "hu"; MessagesFile: "compiler:Languages\Hungarian.isl"           
-Name: "sl"; MessagesFile: "compiler:Languages\Slovenian.isl"
+Name: "sl"; MessagesFile: "compiler:Languages\Slovenian.isl"           
+Name: "nl"; MessagesFile: "compiler:Languages\Dutch.isl"
 
 [Components]
 Name: "main"; Description: "Main Files"; Types: full compact custom; Flags: fixed

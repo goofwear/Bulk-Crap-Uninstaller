@@ -19,9 +19,9 @@ namespace UninstallTools.Factory
 {
     public static class ApplicationUninstallerFactory
     {
-        public static IEnumerable<ApplicationUninstallerEntry> GetUninstallerEntries(ListGenerationProgress.ListGenerationCallback callback)
+        public static IList<ApplicationUninstallerEntry> GetUninstallerEntries(ListGenerationProgress.ListGenerationCallback callback)
         {
-            const int totalStepCount = 8;
+            const int totalStepCount = 7;
             var currentStep = 1;
 
             // Find msi products
@@ -206,25 +206,33 @@ namespace UninstallTools.Factory
             if (a == null || a.Length < 5 || b == null || b.Length < 5)
                 return false;
 
+            /* Old algorithm, much slower
             var changesRequired = StringTools.CompareSimilarity(a, b);
-            return changesRequired < a.Length / 6;
+            return changesRequired < a.Length / 6;*/
+
+            var changesRequired = Sift4.SimplestDistance(a, b, 3);
+            return changesRequired < a.Length / 6; 
         }
 
         private static List<ApplicationUninstallerEntry> GetMiscUninstallerEntries(ListGenerationProgress.ListGenerationCallback progressCallback)
         {
             var otherResults = new List<ApplicationUninstallerEntry>();
-            var miscFactories = new[]
-            {
-                new KeyValuePair<IUninstallerFactory,string>(new PredefinedFactory(), Localisation.Progress_AppStores_Templates),
-                new KeyValuePair<IUninstallerFactory,string>(new SteamFactory(), Localisation.Progress_AppStores_Steam),
-                new KeyValuePair<IUninstallerFactory,string>(new StoreAppFactory(), Localisation.Progress_AppStores_WinStore),
-                new KeyValuePair<IUninstallerFactory,string>(new WindowsFeatureFactory(), Localisation.Progress_AppStores_WinFeatures),
-                new KeyValuePair<IUninstallerFactory,string>(new WindowsUpdateFactory(), "Searching for Windows Updates"),
-            };
+
+            var miscFactories = new Dictionary<IUninstallerFactory, string>();
+            miscFactories.Add(new PredefinedFactory(), Localisation.Progress_AppStores_Templates);
+            if (UninstallToolsGlobalConfig.ScanSteam)
+                miscFactories.Add(new SteamFactory(), Localisation.Progress_AppStores_Steam);
+            if (UninstallToolsGlobalConfig.ScanStoreApps)
+                miscFactories.Add(new StoreAppFactory(), Localisation.Progress_AppStores_WinStore);
+            if (UninstallToolsGlobalConfig.ScanWinFeatures)
+                miscFactories.Add(new WindowsFeatureFactory(), Localisation.Progress_AppStores_WinFeatures);
+            if (UninstallToolsGlobalConfig.ScanWinUpdates)
+                miscFactories.Add(new WindowsUpdateFactory(), Localisation.Progress_AppStores_WinUpdates);
+
             var progress = 0;
             foreach (var kvp in miscFactories)
             {
-                progressCallback(new ListGenerationProgress(progress++, miscFactories.Length, kvp.Value));
+                progressCallback(new ListGenerationProgress(progress++, miscFactories.Count, kvp.Value));
                 try
                 {
                     otherResults.AddRange(kvp.Key.GetUninstallerEntries(null));

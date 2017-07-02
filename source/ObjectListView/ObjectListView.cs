@@ -4542,6 +4542,25 @@ namespace BrightIdeasSoftware
             return -1;
         }
 
+        private int GetDisplayOrderOfItemIndex(ListViewItem listViewItem)
+        {
+            if (!this.ShowGroups || this.Groups.Count == 0)
+                return listViewItem.Index;
+            
+            int i = 0;
+            foreach (ListViewGroup lvg in this.Groups)
+            {
+                foreach (ListViewItem lvi in lvg.Items)
+                {
+                    if (lvi == listViewItem)
+                        return i;
+                    i++;
+                }
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// Return the ListViewItem that appears immediately before the given item.
         /// If the given item is null, the last item in the list will be returned.
@@ -5598,8 +5617,10 @@ namespace BrightIdeasSoftware
             this.BeginUpdate();
             try {
                 this.Sort(e.Column);
-            } finally {
-                this.EndUpdate();
+            }
+            finally {
+                if (!this.IsDisposed && !this.Disposing)
+                    this.EndUpdate();
             }
         }
 
@@ -7943,7 +7964,7 @@ namespace BrightIdeasSoftware
             olvi.UseItemStyleForSubItems = true;
             olvi.SubItems.Clear();
             this.FillInValues(olvi, olvi.RowObject);
-            this.PostProcessOneRow(olvi.Index, this.GetDisplayOrderOfItemIndex(olvi.Index), olvi);
+            this.PostProcessOneRow(olvi.Index, this.GetDisplayOrderOfItemIndex(olvi), olvi);
         }
 
         /// <summary>
@@ -8607,9 +8628,14 @@ namespace BrightIdeasSoftware
         public virtual OLVListItem ModelToItem(object modelObject) {
             if (modelObject == null)
                 return null;
+            
+            for (int i = 0; i < this.Items.Count; i++)
+            {
+                var olvi = this.Items[i] as OLVListItem;
+                Debug.Assert(olvi != null, "olvi != null");
 
-            foreach (OLVListItem olvi in this.Items) {
-                if (olvi.RowObject != null && olvi.RowObject.Equals(modelObject))
+                var rowObject = olvi.RowObject;
+                if (rowObject != null && rowObject == modelObject)
                     return olvi;
             }
             return null;

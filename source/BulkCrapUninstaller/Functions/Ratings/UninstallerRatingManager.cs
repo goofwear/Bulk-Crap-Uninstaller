@@ -34,7 +34,7 @@ namespace BulkCrapUninstaller.Functions.Ratings
         {
             UserId = userId;
 
-            _cashe = new DataTable {Locale = CultureInfo.InvariantCulture};
+            _cashe = new DataTable { Locale = CultureInfo.InvariantCulture };
             using (var reader = new StringReader(Resources.DbRatingSchema))
                 _cashe.ReadXmlSchema(reader);
         }
@@ -51,7 +51,7 @@ namespace BulkCrapUninstaller.Functions.Ratings
                     return Enumerable.Empty<RatingEntry>();
 
                 return from DataRow row in _cashe.Rows
-                    select ToRatingEntry(row);
+                       select ToRatingEntry(row);
             }
         }
 
@@ -67,19 +67,36 @@ namespace BulkCrapUninstaller.Functions.Ratings
         {
             using (var connection = new MySqlConnection(Program.DbConnectionString))
             {
-                var command = connection.CreateCommand();
-                command.CommandText = "CALL " + Resources.DbCommandGetRating + "(@uid)";
-                command.Parameters.AddWithValue("@uid", UserId);
+                var ratingTable = new DataTable { Locale = CultureInfo.InvariantCulture };
+                var userRatingTable = new DataTable { Locale = CultureInfo.InvariantCulture };
 
+                var avgRatingCommand = connection.CreateCommand();
+                avgRatingCommand.CommandText = "CALL getAvgRatings()";
+
+                var userRatingCommand = connection.CreateCommand();
+                userRatingCommand.CommandText = "CALL getUserRatings(@uid)";
+                userRatingCommand.Parameters.AddWithValue("@uid", UserId);
+                
                 connection.Open();
 
-                var dt = new DataTable { Locale = CultureInfo.InvariantCulture };
-                dt.Load(command.ExecuteReader());
+                ratingTable.Load(avgRatingCommand.ExecuteReader());
+                ratingTable.Columns.Add("userRating");
+
+                userRatingTable.Load(userRatingCommand.ExecuteReader());
+
+                // Merge tables
+                foreach (DataRow row in userRatingTable.Rows)
+                {
+                    var dataRow = ratingTable.Select($"applicationName = '{((string)row[0]).Replace("'", "''")}'")
+                        .FirstOrDefault();
+
+                    if (dataRow != null) dataRow[2] = row[1];
+                }
 
                 lock (_cacheLock)
                 {
                     _cashe?.Dispose();
-                    _cashe = dt;
+                    _cashe = ratingTable;
 
                     // Reapply any pending user ratings to the new datatable
                     lock (_ratingsToSend)
@@ -87,7 +104,7 @@ namespace BulkCrapUninstaller.Functions.Ratings
                         foreach (var rating in _ratingsToSend)
                         {
                             var stored = GetCasheEntry(rating.Key);
-                            var newRating = (int) rating.Value;
+                            var newRating = (int)rating.Value;
                             if (stored != null)
                                 stored[2] = newRating;
                             else
@@ -100,6 +117,8 @@ namespace BulkCrapUninstaller.Functions.Ratings
 
         public void UploadRatings()
         {
+            if (_ratingsToSend.Count < 1) return;
+
             using (var connection = new MySqlConnection(Program.DbConnectionString))
             {
                 var command = connection.CreateCommand();
@@ -116,7 +135,7 @@ namespace BulkCrapUninstaller.Functions.Ratings
                     foreach (var uninstallerRating in _ratingsToSend)
                     {
                         command.Parameters["@appParam"].Value = uninstallerRating.Key;
-                        command.Parameters["@rating"].Value = (int) uninstallerRating.Value;
+                        command.Parameters["@rating"].Value = (int)uninstallerRating.Value;
 
                         command.ExecuteNonQuery();
                     }
@@ -132,8 +151,10 @@ namespace BulkCrapUninstaller.Functions.Ratings
                 throw new ArgumentNullException(nameof(appName));
 
             lock (_cacheLock)
-                return _cashe.Rows.Cast<DataRow>().FirstOrDefault(
-                    r => appName.Equals(r[0] as string, StringComparison.InvariantCultureIgnoreCase));
+            {
+                return _cashe.Select($"applicationName = '{appName.Replace("'", "''")}'")
+                    .FirstOrDefault();
+            }
         }
 
         public void SetMyRating(string appKey, UninstallerRating rating)
@@ -146,7 +167,7 @@ namespace BulkCrapUninstaller.Functions.Ratings
             lock (_cacheLock)
             {
                 var stored = GetCasheEntry(appKey);
-                var newRating = (int) rating;
+                var newRating = (int)rating;
                 if (stored != null)
                     stored[2] = newRating;
                 else
@@ -167,8 +188,8 @@ namespace BulkCrapUninstaller.Functions.Ratings
             return new RatingEntry
             {
                 ApplicationName = row[0] as string,
-                AverageRating = row.IsNull(1) ? (int?) null : Convert.ToInt32(row[1], CultureInfo.InvariantCulture),
-                MyRating = row.IsNull(2) ? (int?) null : Convert.ToInt32(row[2], CultureInfo.InvariantCulture)
+                AverageRating = row.IsNull(1) ? (int?)null : Convert.ToInt32(row[1], CultureInfo.InvariantCulture),
+                MyRating = row.IsNull(2) ? (int?)null : Convert.ToInt32(row[2], CultureInfo.InvariantCulture)
             };
         }
 
@@ -211,24 +232,31 @@ namespace BulkCrapUninstaller.Functions.Ratings
             lock (_cacheLock)
                 lock (_ratingsToSend)
                 {
-                    if (File.Exists(fileName))
+                    try
                     {
-                        _cashe?.Dispose();
-                        _cashe = new DataTable { Locale = CultureInfo.InvariantCulture };
-
-                        using (var reader = new StringReader(Resources.DbRatingSchema))
-                            _cashe.ReadXmlSchema(reader);
-
-                        _cashe.ReadXml(fileName);
-                    }
-
-                    var sendCasheName = fileName + ".out";
-                    if (File.Exists(sendCasheName))
-                    {
-                        using (var reader = new StringReader(File.ReadAllText(sendCasheName, Encoding.Unicode)))
+                        if (File.Exists(fileName))
                         {
-                            _ratingsToSend.Deserialize(reader);
+                            _cashe?.Dispose();
+                            _cashe = new DataTable { Locale = CultureInfo.InvariantCulture };
+
+                            using (var reader = new StringReader(Resources.DbRatingSchema))
+                                _cashe.ReadXmlSchema(reader);
+
+                            _cashe.ReadXml(fileName);
                         }
+
+                        var sendCasheName = fileName + ".out";
+                        if (File.Exists(sendCasheName))
+                        {
+                            using (var reader = new StringReader(File.ReadAllText(sendCasheName, Encoding.Unicode)))
+                            {
+                                _ratingsToSend.Deserialize(reader);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
                     }
                 }
         }
